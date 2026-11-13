@@ -1,3 +1,4 @@
+import os
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
@@ -11,7 +12,6 @@ def generate_erd():
               "MIVA Open University | MIT 8103 Advanced Database Systems (Portfolio 1)",
               fontsize=14, fontweight="bold", pad=20, color="#0F172A")
     
-    # Entity definitions: (name, x, y, width, height, color, attributes)
     entities = [
         {
             "name": "CUSTOMERS",
@@ -134,9 +134,7 @@ def generate_erd():
         }
     ]
     
-    # Draw Entity Boxes
     for e in entities:
-        # Background box
         rect = patches.FancyBboxPatch(
             (e["x"], e["y"]), e["w"], e["h"],
             boxstyle="round,pad=0.06,rounding_size=0.15",
@@ -144,7 +142,6 @@ def generate_erd():
         )
         ax.add_patch(rect)
         
-        # Header banner
         header_h = 0.5
         header_rect = patches.FancyBboxPatch(
             (e["x"], e["y"] + e["h"] - header_h), e["w"], header_h,
@@ -153,16 +150,13 @@ def generate_erd():
         )
         ax.add_patch(header_rect)
         
-        # Header text
         ax.text(e["x"] + e["w"]/2, e["y"] + e["h"] - header_h/2, e["name"],
                 color="white", fontsize=9, fontweight="bold", ha="center", va="center")
         
-        # Attributes text
         attr_text = "\n".join(e["attrs"])
         ax.text(e["x"] + 0.15, e["y"] + e["h"] - header_h - 0.2, attr_text,
                 color="#1E293B", fontsize=7.5, va="top", fontfamily="monospace", linespacing=1.3)
 
-    # Helper function for relationship arrows
     def draw_relation(x1, y1, x2, y2, label="", color="#64748B"):
         ax.annotate(
             "", xy=(x2, y2), xytext=(x1, y1),
@@ -173,7 +167,6 @@ def generate_erd():
             ax.text(mx, my, label, fontsize=7, color="#475569",
                     bbox=dict(boxstyle="round,pad=0.15", facecolor="#F1F5F9", edgecolor="none", alpha=0.9))
 
-    # Relationships
     draw_relation(2.0, 7.0, 2.0, 6.4, "1 : N (owns accounts)")
     draw_relation(3.5, 8.0, 4.5, 5.5, "1 : N (registers merchant)")
     draw_relation(4.5, 8.2, 3.7, 5.8, "1 : N (currency)")
@@ -188,9 +181,11 @@ def generate_erd():
     ax.axis("off")
     
     plt.tight_layout()
-    plt.savefig("advanced-database-portfolio/portfolio-1-database-design/schema_diagram.png", bbox_inches="tight")
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    out_file = os.path.join(base_dir, "schema_diagram.png")
+    plt.savefig(out_file, bbox_inches="tight")
     plt.close()
-    print("ER Diagram generated successfully: schema_diagram.png")
+    print(f"ER Diagram generated successfully: {out_file}")
 
 if __name__ == "__main__":
     generate_erd()

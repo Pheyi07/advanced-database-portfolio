@@ -3,7 +3,9 @@ import threading
 import time
 import os
 
-DB_DEADLOCK = 'advanced-database-portfolio/portfolio-3-transactions-concurrency/deadlock_test.db'
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR = os.path.dirname(BASE_DIR)
+DB_DEADLOCK = os.path.join(BASE_DIR, 'deadlock_test.db')
 
 def setup_deadlock_db():
     if os.path.exists(DB_DEADLOCK):
@@ -12,9 +14,12 @@ def setup_deadlock_db():
         except Exception:
             pass
     conn = sqlite3.connect(DB_DEADLOCK)
-    with open('advanced-database-portfolio/portfolio-1-database-design/01_schema_ddl.sql', 'r', encoding='utf-8') as f:
+    ddl_path = os.path.join(ROOT_DIR, 'portfolio-1-database-design', '01_schema_ddl.sql')
+    seed_path = os.path.join(ROOT_DIR, 'portfolio-1-database-design', '02_seed_data.sql')
+
+    with open(ddl_path, 'r', encoding='utf-8') as f:
         conn.executescript(f.read())
-    with open('advanced-database-portfolio/portfolio-1-database-design/02_seed_data.sql', 'r', encoding='utf-8') as f:
+    with open(seed_path, 'r', encoding='utf-8') as f:
         conn.executescript(f.read())
     conn.commit()
     conn.close()
@@ -50,7 +55,7 @@ def simulate_deadlock_and_prevention():
             conn.close()
 
     def tx2_worker():
-        time.sleep(0.1) # Stagger start slightly
+        time.sleep(0.1)
         conn = sqlite3.connect(DB_DEADLOCK, timeout=1.0)
         cur = conn.cursor()
         try:
@@ -84,7 +89,6 @@ def simulate_deadlock_and_prevention():
     log_ordered = []
 
     def ordered_transfer(thread_name, acc_src, acc_dst, amount):
-        # Deterministic Lock Ordering
         lock_first, lock_second = sorted([acc_src, acc_dst])
         log_ordered.append(f"[{thread_name}] Requested transfer: {acc_src} -> {acc_dst}. Lock Order: {lock_first} then {lock_second}")
         
@@ -92,13 +96,10 @@ def simulate_deadlock_and_prevention():
         cur = conn.cursor()
         try:
             cur.execute("BEGIN IMMEDIATE;")
-            # Lock first
             cur.execute("UPDATE accounts SET balance = balance WHERE account_id = ?", (lock_first,))
             time.sleep(0.1)
-            # Lock second
             cur.execute("UPDATE accounts SET balance = balance WHERE account_id = ?", (lock_second,))
             
-            # Apply debits/credits
             cur.execute("UPDATE accounts SET balance = balance - ? WHERE account_id = ?", (amount, acc_src))
             cur.execute("UPDATE accounts SET balance = balance + ? WHERE account_id = ?", (amount, acc_dst))
             conn.commit()

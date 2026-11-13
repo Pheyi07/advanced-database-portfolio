@@ -7,7 +7,9 @@ import os
 from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
 
-DB_PATH = 'advanced-database-portfolio/portfolio-2-query-optimisation/benchmark.db'
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR = os.path.dirname(BASE_DIR)
+DB_PATH = os.path.join(BASE_DIR, 'benchmark.db')
 
 def setup_and_seed_benchmark_data():
     if os.path.exists(DB_PATH):
@@ -22,10 +24,13 @@ def setup_and_seed_benchmark_data():
     conn.execute("PRAGMA synchronous = OFF;")
     conn.execute("PRAGMA journal_mode = MEMORY;")
 
-    with open('advanced-database-portfolio/portfolio-1-database-design/01_schema_ddl.sql', 'r', encoding='utf-8') as f:
+    schema_file = os.path.join(ROOT_DIR, 'portfolio-1-database-design', '01_schema_ddl.sql')
+    seed_file = os.path.join(ROOT_DIR, 'portfolio-1-database-design', '02_seed_data.sql')
+
+    with open(schema_file, 'r', encoding='utf-8') as f:
         conn.executescript(f.read())
         
-    with open('advanced-database-portfolio/portfolio-1-database-design/02_seed_data.sql', 'r', encoding='utf-8') as f:
+    with open(seed_file, 'r', encoding='utf-8') as f:
         conn.executescript(f.read())
 
     print("[2/5] Synthesizing high-volume dataset (50,000 transactions, 100,000 ledger entries)...")
@@ -97,7 +102,6 @@ def setup_and_seed_benchmark_data():
         tx_id = f"tx-bulk-{i:06d}"
         idemp = f"idemp-bench-{i:06d}-{uuid.uuid4().hex[:8]}"
         
-        # Favor target accounts occasionally for query graph depth
         if i % 50 == 0:
             src_acc = 'acc-001-ngn'
         else:
@@ -296,7 +300,7 @@ def run_benchmarks():
             t1 = time.perf_counter()
             times.append((t1 - t0) * 1000.0)
         times.sort()
-        avg_time_before = sum(times[1:-1]) / len(times[1:-1]) # Trimmed mean
+        avg_time_before = sum(times[1:-1]) / len(times[1:-1])
         
         results.append({
             "id": q["id"],
@@ -307,7 +311,8 @@ def run_benchmarks():
         print(f"  - {q['id']} ({q['name'][:35]}): {avg_time_before:.2f} ms")
 
     print("\n[4/5] Applying indexing strategy & running ANALYZE...")
-    with open('advanced-database-portfolio/portfolio-2-query-optimisation/02_indexing_strategy.sql', 'r', encoding='utf-8') as f:
+    idx_file = os.path.join(BASE_DIR, '02_indexing_strategy.sql')
+    with open(idx_file, 'r', encoding='utf-8') as f:
         conn.executescript(f.read())
     conn.execute("ANALYZE;")
 
@@ -334,8 +339,8 @@ def run_benchmarks():
 
     conn.close()
 
-    # Save JSON results
-    with open('advanced-database-portfolio/portfolio-2-query-optimisation/benchmark_results.json', 'w') as f:
+    res_json_file = os.path.join(BASE_DIR, 'benchmark_results.json')
+    with open(res_json_file, 'w') as f:
         json.dump(results, f, indent=2)
 
     generate_performance_chart(results)
@@ -372,7 +377,7 @@ def generate_performance_chart(results):
                 bbox=dict(boxstyle='round,pad=0.2', facecolor='#DBEAFE', edgecolor='#93C5FD', alpha=0.95))
 
     plt.tight_layout()
-    chart_path = 'advanced-database-portfolio/portfolio-2-query-optimisation/performance_comparison.png'
+    chart_path = os.path.join(BASE_DIR, 'performance_comparison.png')
     plt.savefig(chart_path, bbox_inches='tight')
     plt.close()
     print(f"Benchmark chart saved to {chart_path}")
@@ -443,9 +448,10 @@ An empirical benchmark comparing execution times before and after applying strat
 
 ![Performance Comparison](performance_comparison.png)
 """
-    with open('advanced-database-portfolio/portfolio-2-query-optimisation/execution_plans.md', 'w', encoding='utf-8') as f:
+    out_md = os.path.join(BASE_DIR, 'execution_plans.md')
+    with open(out_md, 'w', encoding='utf-8') as f:
         f.write(md_content)
-    print("Execution plans report saved to execution_plans.md")
+    print(f"Execution plans report saved to {out_md}")
 
 if __name__ == "__main__":
     setup_and_seed_benchmark_data()

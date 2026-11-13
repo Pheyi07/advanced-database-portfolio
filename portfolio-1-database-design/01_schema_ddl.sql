@@ -6,10 +6,19 @@
 
 PRAGMA foreign_keys = ON;
 
+-- Drop dependent child tables first in reverse dependency order
+DROP TABLE IF EXISTS aml_risk_alerts;
+DROP TABLE IF EXISTS ledger_entries;
+DROP TABLE IF EXISTS transactions;
+DROP TABLE IF EXISTS merchants;
+DROP TABLE IF EXISTS exchange_rates;
+DROP TABLE IF EXISTS accounts;
+DROP TABLE IF EXISTS customers;
+DROP TABLE IF EXISTS currency_registry;
+
 -- ----------------------------------------------------------------------------
 -- Table 1: CURRENCY REGISTRY (Lookup / Dimension Table)
 -- ----------------------------------------------------------------------------
-DROP TABLE IF EXISTS currency_registry;
 CREATE TABLE currency_registry (
     currency_code       CHAR(3) PRIMARY KEY,
     currency_name       VARCHAR(50) NOT NULL,
@@ -22,7 +31,6 @@ CREATE TABLE currency_registry (
 -- ----------------------------------------------------------------------------
 -- Table 2: CUSTOMERS (Core Entity)
 -- ----------------------------------------------------------------------------
-DROP TABLE IF EXISTS customers;
 CREATE TABLE customers (
     customer_id         TEXT PRIMARY KEY, -- UUID v4
     first_name          VARCHAR(50) NOT NULL,
@@ -40,7 +48,6 @@ CREATE TABLE customers (
 -- ----------------------------------------------------------------------------
 -- Table 3: ACCOUNTS / DIGITAL WALLETS
 -- ----------------------------------------------------------------------------
-DROP TABLE IF EXISTS accounts;
 CREATE TABLE accounts (
     account_id          TEXT PRIMARY KEY, -- UUID v4
     customer_id         TEXT NOT NULL,
@@ -62,7 +69,6 @@ CREATE TABLE accounts (
 -- ----------------------------------------------------------------------------
 -- Table 4: EXCHANGE RATES (Historical & Real-Time FX Dimension)
 -- ----------------------------------------------------------------------------
-DROP TABLE IF EXISTS exchange_rates;
 CREATE TABLE exchange_rates (
     rate_id             INTEGER PRIMARY KEY AUTOINCREMENT,
     base_currency       CHAR(3) NOT NULL,
@@ -77,7 +83,6 @@ CREATE TABLE exchange_rates (
 -- ----------------------------------------------------------------------------
 -- Table 5: MERCHANTS (Business Profiles)
 -- ----------------------------------------------------------------------------
-DROP TABLE IF EXISTS merchants;
 CREATE TABLE merchants (
     merchant_id             TEXT PRIMARY KEY, -- UUID v4
     customer_id             TEXT NOT NULL,
@@ -96,7 +101,6 @@ CREATE TABLE merchants (
 -- ----------------------------------------------------------------------------
 -- Table 6: TRANSACTIONS (Core Financial Operation / Double-Entry Header)
 -- ----------------------------------------------------------------------------
-DROP TABLE IF EXISTS transactions;
 CREATE TABLE transactions (
     transaction_id          TEXT PRIMARY KEY, -- UUID v4
     idempotency_key         VARCHAR(64) NOT NULL UNIQUE,
@@ -127,7 +131,6 @@ CREATE TABLE transactions (
 -- ----------------------------------------------------------------------------
 -- Table 7: LEDGER ENTRIES (Double-Entry General Ledger - Immutable)
 -- ----------------------------------------------------------------------------
-DROP TABLE IF EXISTS ledger_entries;
 CREATE TABLE ledger_entries (
     entry_id            INTEGER PRIMARY KEY AUTOINCREMENT,
     transaction_id      TEXT NOT NULL,
@@ -145,7 +148,6 @@ CREATE TABLE ledger_entries (
 -- ----------------------------------------------------------------------------
 -- Table 8: AML RISK ALERTS (Compliance & Fraud Investigation)
 -- ----------------------------------------------------------------------------
-DROP TABLE IF EXISTS aml_risk_alerts;
 CREATE TABLE aml_risk_alerts (
     alert_id            INTEGER PRIMARY KEY AUTOINCREMENT,
     transaction_id      TEXT NOT NULL,

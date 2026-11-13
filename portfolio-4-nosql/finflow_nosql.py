@@ -3,7 +3,8 @@ import json
 import os
 from datetime import datetime, timezone, timedelta
 
-NOSQL_DB = 'advanced-database-portfolio/portfolio-4-nosql/finflow_nosql.db'
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+NOSQL_DB = os.path.join(BASE_DIR, 'finflow_nosql.db')
 
 class FinFlowDocumentStore:
     def __init__(self, db_path=NOSQL_DB):
@@ -14,7 +15,6 @@ class FinFlowDocumentStore:
         conn = sqlite3.connect(self.db_path)
         cur = conn.cursor()
         
-        # 1. Document Collection: transaction_telemetry
         cur.execute("""
             CREATE TABLE IF NOT EXISTS transaction_telemetry (
                 doc_id TEXT PRIMARY KEY,
@@ -25,7 +25,6 @@ class FinFlowDocumentStore:
             );
         """)
 
-        # 2. Key-Value / TTL Collection: idempotency_cache
         cur.execute("""
             CREATE TABLE IF NOT EXISTS idempotency_cache (
                 cache_key TEXT PRIMARY KEY,
@@ -35,7 +34,6 @@ class FinFlowDocumentStore:
             );
         """)
 
-        # 3. Create Functional B-Tree Indexes on nested JSON attributes
         cur.execute("""
             CREATE INDEX IF NOT EXISTS idx_json_fraud_score 
             ON transaction_telemetry (json_extract(data, '$.risk_signals.fraud_score'));
@@ -53,7 +51,6 @@ class FinFlowDocumentStore:
         conn.close()
 
     def insert_document(self, doc):
-        """Inserts a semi-structured JSON document with schema validation."""
         required = ["_id", "event_type", "transaction_id", "timestamp"]
         for field in required:
             if field not in doc:
@@ -69,7 +66,6 @@ class FinFlowDocumentStore:
         conn.close()
 
     def set_idempotency_token(self, token, payload, ttl_seconds=86400):
-        """Key-Value store operation simulating Redis SETEX key ttl value."""
         exp = (datetime.now(timezone.utc) + timedelta(seconds=ttl_seconds)).isoformat()
         conn = sqlite3.connect(self.db_path)
         cur = conn.cursor()
@@ -100,7 +96,8 @@ def seed_sample_documents():
             pass
 
     store = FinFlowDocumentStore()
-    with open('advanced-database-portfolio/portfolio-4-nosql/02_sample_documents.json', 'r', encoding='utf-8') as f:
+    sample_file = os.path.join(BASE_DIR, '02_sample_documents.json')
+    with open(sample_file, 'r', encoding='utf-8') as f:
         docs = json.load(f)
 
     for doc in docs:

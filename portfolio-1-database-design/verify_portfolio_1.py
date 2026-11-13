@@ -1,13 +1,22 @@
 import sqlite3
+import os
 
-db_path = 'advanced-database-portfolio/portfolio-1-database-design/finflow.db'
+base_dir = os.path.dirname(os.path.abspath(__file__))
+db_path = os.path.join(base_dir, 'finflow.db')
+
+if os.path.exists(db_path):
+    try:
+        os.remove(db_path)
+    except Exception:
+        pass
+
 conn = sqlite3.connect(db_path)
 conn.execute('PRAGMA foreign_keys = ON;')
 
-with open('advanced-database-portfolio/portfolio-1-database-design/01_schema_ddl.sql', 'r', encoding='utf-8') as f:
+with open(os.path.join(base_dir, '01_schema_ddl.sql'), 'r', encoding='utf-8') as f:
     conn.executescript(f.read())
 
-with open('advanced-database-portfolio/portfolio-1-database-design/02_seed_data.sql', 'r', encoding='utf-8') as f:
+with open(os.path.join(base_dir, '02_seed_data.sql'), 'r', encoding='utf-8') as f:
     conn.executescript(f.read())
 
 cur = conn.cursor()

@@ -3,7 +3,9 @@ import threading
 import time
 import os
 
-DB_CONCURRENCY = 'advanced-database-portfolio/portfolio-3-transactions-concurrency/concurrency_test.db'
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR = os.path.dirname(BASE_DIR)
+DB_CONCURRENCY = os.path.join(BASE_DIR, 'concurrency_test.db')
 
 def setup_test_db():
     if os.path.exists(DB_CONCURRENCY):
@@ -13,25 +15,19 @@ def setup_test_db():
             pass
 
     conn = sqlite3.connect(DB_CONCURRENCY)
-    with open('advanced-database-portfolio/portfolio-1-database-design/01_schema_ddl.sql', 'r', encoding='utf-8') as f:
+    ddl_path = os.path.join(ROOT_DIR, 'portfolio-1-database-design', '01_schema_ddl.sql')
+    seed_path = os.path.join(ROOT_DIR, 'portfolio-1-database-design', '02_seed_data.sql')
+
+    with open(ddl_path, 'r', encoding='utf-8') as f:
         conn.executescript(f.read())
-    with open('advanced-database-portfolio/portfolio-1-database-design/02_seed_data.sql', 'r', encoding='utf-8') as f:
+    with open(seed_path, 'r', encoding='utf-8') as f:
         conn.executescript(f.read())
         
-    # Reset a specific test account: balance $1,000.00, version = 1
     conn.execute("UPDATE accounts SET balance = 1000.0000, version = 1 WHERE account_id = 'acc-001-usd';")
     conn.commit()
     conn.close()
 
 def run_lost_update_simulation():
-    """
-    Demonstrates the Classic Lost Update / Double-Spend Anomaly.
-    Starting balance: $1,000.00.
-    Thread A tries to withdraw $800.00.
-    Thread B tries to withdraw $700.00.
-    Total requested: $1,500.00 (exceeds balance).
-    Without concurrency control, an application-level read-modify-write causes a lost update.
-    """
     print("\n" + "="*70)
     print("SIMULATION 1: UNCONTROLLED CONCURRENCY (LOST UPDATE / DOUBLE-SPEND)")
     print("="*70)
@@ -48,18 +44,15 @@ def run_lost_update_simulation():
         conn = sqlite3.connect(DB_CONCURRENCY)
         cur = conn.cursor()
         
-        # 1. Read balance
         cur.execute("SELECT balance FROM accounts WHERE account_id = 'acc-001-usd'")
         current_bal = cur.fetchone()[0]
         logs.append(f"[{thread_name}] Read balance: ${current_bal:,.2f}")
         
-        # Artificial latency simulating network / business logic check
         time.sleep(delay)
         
         if current_bal >= withdraw_amount:
             new_bal = current_bal - withdraw_amount
             logs.append(f"[{thread_name}] Validation PASSED. Writing new balance: ${new_bal:,.2f}")
-            # Blind overwrite without atomic condition
             cur.execute("UPDATE accounts SET balance = ? WHERE account_id = 'acc-001-usd'", (new_bal,))
             conn.commit()
             logs.append(f"[{thread_name}] COMMIT successful.")
@@ -89,10 +82,6 @@ def run_lost_update_simulation():
     return logs, initial_balance, final_bal
 
 def run_occ_simulation():
-    """
-    Demonstrates Optimistic Concurrency Control (OCC) using the `version` column.
-    Only updates where version matches the read version succeed.
-    """
     print("\n" + "="*70)
     print("SIMULATION 2: OPTIMISTIC CONCURRENCY CONTROL (OCC with Versioning)")
     print("="*70)
@@ -109,7 +98,6 @@ def run_occ_simulation():
         conn = sqlite3.connect(DB_CONCURRENCY)
         cur = conn.cursor()
         
-        # 1. Read balance and version
         cur.execute("SELECT balance, version FROM accounts WHERE account_id = 'acc-001-usd'")
         current_bal, current_ver = cur.fetchone()
         logs.append(f"[{thread_name}] Read balance: ${current_bal:,.2f}, Version: {current_ver}")
@@ -118,7 +106,6 @@ def run_occ_simulation():
         
         if current_bal >= withdraw_amount:
             new_bal = current_bal - withdraw_amount
-            # Conditional compare-and-swap update
             cur.execute("""
                 UPDATE accounts 
                 SET balance = ?, version = version + 1 
@@ -154,10 +141,6 @@ def run_occ_simulation():
     return logs, initial_balance, final_bal
 
 def run_pessimistic_atomic_simulation():
-    """
-    Demonstrates Pessimistic / Atomic Predicate Locking.
-    The database ensures that updates are serialized atomically at the storage layer.
-    """
     print("\n" + "="*70)
     print("SIMULATION 3: PESSIMISTIC ATOMIC PREDICATE LOCKING")
     print("="*70)
@@ -171,7 +154,6 @@ def run_pessimistic_atomic_simulation():
         
         time.sleep(delay)
         
-        # Atomic predicate update: combines condition check and update in a single atomic SQL statement
         cur.execute("""
             UPDATE accounts 
             SET balance = balance - ?, version = version + 1 

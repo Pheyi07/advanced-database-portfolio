@@ -1,9 +1,9 @@
 import sqlite3
 import hashlib
 import os
-import json
 
-SHARD_DIR = 'advanced-database-portfolio/portfolio-5-distributed-cloud/shards'
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+SHARD_DIR = os.path.join(BASE_DIR, 'shards')
 
 class DistributedShardRouter:
     def __init__(self, num_shards=3):
@@ -44,7 +44,6 @@ class DistributedShardRouter:
             conn.close()
 
     def get_shard_id(self, key):
-        """Consistent hash modulo routing: Hash(key) % N"""
         digest = hashlib.md5(key.encode('utf-8')).hexdigest()
         return int(digest, 16) % self.num_shards
 
@@ -72,11 +71,6 @@ class DistributedShardRouter:
         return shard_id, row
 
     def execute_cross_shard_2pc(self, tx_id, src_cust, src_acc, dst_cust, dst_acc, amount):
-        """
-        Simulates Two-Phase Commit (2PC) protocol across distinct physical shards.
-        Phase 1: Prepare (verify balance, acquire lock/intent, record vote)
-        Phase 2: Commit / Abort (finalize ledger changes or rollback on failure)
-        """
         src_shard = self.get_shard_id(src_cust)
         dst_shard = self.get_shard_id(dst_cust)
 
@@ -87,12 +81,10 @@ class DistributedShardRouter:
         conn_src = sqlite3.connect(self.shard_paths[src_shard])
         conn_dst = sqlite3.connect(self.shard_paths[dst_shard])
 
-        # PHASE 1: PREPARE
         print("  --- PHASE 1: PREPARE PHASE ---")
         src_vote = "VOTE_ABORT"
         dst_vote = "VOTE_ABORT"
 
-        # Check source balance
         cur_src = conn_src.cursor()
         cur_src.execute("SELECT balance FROM accounts WHERE account_id = ?", (src_acc,))
         s_row = cur_src.fetchone()
@@ -102,7 +94,6 @@ class DistributedShardRouter:
         else:
             print(f"  [Shard {src_shard}] Insufficient funds or account not found! Responded: VOTE_ABORT")
 
-        # Check destination existence
         cur_dst = conn_dst.cursor()
         cur_dst.execute("SELECT balance FROM accounts WHERE account_id = ?", (dst_acc,))
         d_row = cur_dst.fetchone()
@@ -112,12 +103,10 @@ class DistributedShardRouter:
         else:
             print(f"  [Shard {dst_shard}] Destination account missing! Responded: VOTE_ABORT")
 
-        # PHASE 2: COMMIT OR ABORT
         print("  --- PHASE 2: COMMIT / ABORT PHASE ---")
         if src_vote == "VOTE_COMMIT" and dst_vote == "VOTE_COMMIT":
             print("  [COORDINATOR] Consensus achieved: All participants voted COMMIT. Executing global commit...")
             
-            # Debit source
             cur_src.execute("UPDATE accounts SET balance = balance - ? WHERE account_id = ?", (amount, src_acc))
             cur_src.execute("""
                 INSERT INTO shard_transactions (tx_id, source_account_id, destination_account_id, amount, status)
@@ -125,7 +114,6 @@ class DistributedShardRouter:
             """, (tx_id, src_acc, dst_acc, amount))
             conn_src.commit()
 
-            # Credit destination
             cur_dst.execute("UPDATE accounts SET balance = balance + ? WHERE account_id = ?", (amount, dst_acc))
             cur_dst.execute("""
                 INSERT INTO shard_transactions (tx_id, source_account_id, destination_account_id, amount, status)
@@ -152,7 +140,6 @@ def run_sharding_demo():
     
     router = DistributedShardRouter(num_shards=3)
 
-    # Populate accounts partitioned across 3 shards
     accounts = [
         ("acc-cust001-usd", "cust-001", "ACC-101", "USD", 50000.0),
         ("acc-cust002-usd", "cust-002", "ACC-102", "USD", 12000.0),
@@ -166,26 +153,22 @@ def run_sharding_demo():
         s_id = router.insert_account(*acc)
         print(f"  - Account: {acc[0]} | Customer: {acc[1]} -> Routed to Node: Shard {s_id}")
 
-    # Inspect shard distribution
     for i in range(3):
         conn = sqlite3.connect(router.shard_paths[i])
         cnt = conn.execute("SELECT count(*) FROM accounts;").fetchone()[0]
         conn.close()
         print(f"  * Node Shard {i} hosting {cnt} active accounts.")
 
-    # Execute Cross-Shard 2PC (Shard of cust-001 to Shard of cust-002)
     print("\n[Step 2: Executing Successful Cross-Shard Transaction]")
     res1 = router.execute_cross_shard_2pc(
         "tx-2pc-001", "cust-001", "acc-cust001-usd", "cust-002", "acc-cust002-usd", 5000.0
     )
 
-    # Execute Failed Cross-Shard 2PC (Insufficient Funds)
     print("\n[Step 3: Executing Cross-Shard Transaction with Insufficient Funds (Abort)]")
     res2 = router.execute_cross_shard_2pc(
         "tx-2pc-002", "cust-003", "acc-cust003-usd", "cust-004", "acc-cust004-usd", 999999.0
     )
 
-    # Check Balances after 2PC
     print("\n[Step 4: Post-Transaction Balances across Physical Shards]")
     s1, r1 = router.get_account("cust-001", "acc-cust001-usd")
     s2, r2 = router.get_account("cust-002", "acc-cust002-usd")

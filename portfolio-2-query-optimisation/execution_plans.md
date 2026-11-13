@@ -12,11 +12,11 @@ An empirical benchmark comparing execution times before and after applying strat
 
 | Query ID | Workload Operation | Unindexed Latency (ms) | Indexed Latency (ms) | Speedup Ratio | Core Optimisation Mechanism |
 | :--- | :--- | :---: | :---: | :---: | :--- |
-| **Q1** | Ledger Running Balance Window Audit | `19.62 ms` | `11.77 ms` | **`1.7x`** | Composite B-tree eliminates full table scan and sort phase |
-| **Q2** | High-Risk Critical AML Investigations | `4.59 ms` | `4.36 ms` | **`1.1x`** | Multi-column index filters high-risk alerts before table probe |
-| **Q3** | Date-Bounded Settlement Reconciliation | `46.62 ms` | `33.28 ms` | **`1.4x`** | Covering index enables index-only range scan on settlement window |
-| **Q4** | Dedicated Merchant GMV & Fee Audit | `36.79 ms` | `29.73 ms` | **`1.2x`** | B-tree lookup on merchant foreign key & status avoids full scan |
-| **Q5** | 2-Hop Transfer Fan-Out Lineage | `312.12 ms` | `0.31 ms` | **`1000.3x`** | Covering hop index accelerates 2-hop transfer lineage traversal |
+| **Q1** | Ledger Running Balance Window Audit | `27.86 ms` | `12.58 ms` | **`2.2x`** | Composite B-tree eliminates full table scan and sort phase |
+| **Q2** | High-Risk Critical AML Investigations | `5.31 ms` | `5.93 ms` | **`0.9x`** | Multi-column index filters high-risk alerts before table probe |
+| **Q3** | Date-Bounded Settlement Reconciliation | `47.33 ms` | `34.19 ms` | **`1.4x`** | Covering index enables index-only range scan on settlement window |
+| **Q4** | Dedicated Merchant GMV & Fee Audit | `37.39 ms` | `28.35 ms` | **`1.3x`** | B-tree lookup on merchant foreign key & status avoids full scan |
+| **Q5** | 2-Hop Transfer Fan-Out Lineage | `293.73 ms` | `0.13 ms` | **`2299.8x`** | Covering hop index accelerates 2-hop transfer lineage traversal |
 
 ---
 
@@ -43,7 +43,7 @@ An empirical benchmark comparing execution times before and after applying strat
 114|0|0|USE TEMP B-TREE FOR ORDER BY
 ```
 
-**Technical Assessment:** Execution latency reduced from `19.62 ms` to `11.77 ms`, delivering a **`1.7x` speedup**. The SQLite cost-based optimizer transitioned from a sequential scan (`SCAN TABLE`) across 50,000+ records to a logarithmic B-Tree range search (`SEARCH TABLE USING INDEX`), avoiding temporary sorting structures (`USE TEMP B-TREE FOR ORDER BY`).
+**Technical Assessment:** Execution latency reduced from `27.86 ms` to `12.58 ms`, delivering a **`2.2x` speedup**. The SQLite cost-based optimizer transitioned from a sequential scan (`SCAN TABLE`) across 50,000+ records to a logarithmic B-Tree range search (`SEARCH TABLE USING INDEX`), avoiding temporary sorting structures (`USE TEMP B-TREE FOR ORDER BY`).
 
 ### Q2: High-Risk Critical AML Investigations
 
@@ -58,14 +58,14 @@ An empirical benchmark comparing execution times before and after applying strat
 
 **Optimized Execution Plan (Indexed):**
 ```text
-10|0|106|SCAN a
-18|0|43|SEARCH t USING INDEX sqlite_autoindex_transactions_1 (transaction_id=?)
-23|0|38|SEARCH acc USING INDEX sqlite_autoindex_accounts_1 (account_id=?)
-28|0|36|SEARCH c USING INDEX sqlite_autoindex_customers_1 (customer_id=?)
-50|0|0|USE TEMP B-TREE FOR ORDER BY
+11|0|111|SEARCH a USING INDEX idx_aml_alert_status_sev (severity=? AND status=?)
+46|0|43|SEARCH t USING INDEX sqlite_autoindex_transactions_1 (transaction_id=?)
+51|0|38|SEARCH acc USING INDEX sqlite_autoindex_accounts_1 (account_id=?)
+56|0|36|SEARCH c USING INDEX sqlite_autoindex_customers_1 (customer_id=?)
+81|0|0|USE TEMP B-TREE FOR ORDER BY
 ```
 
-**Technical Assessment:** Execution latency reduced from `4.59 ms` to `4.36 ms`, delivering a **`1.1x` speedup**. The SQLite cost-based optimizer transitioned from a sequential scan (`SCAN TABLE`) across 50,000+ records to a logarithmic B-Tree range search (`SEARCH TABLE USING INDEX`), avoiding temporary sorting structures (`USE TEMP B-TREE FOR ORDER BY`).
+**Technical Assessment:** Execution latency reduced from `5.31 ms` to `5.93 ms`, delivering a **`0.9x` speedup**. The SQLite cost-based optimizer transitioned from a sequential scan (`SCAN TABLE`) across 50,000+ records to a logarithmic B-Tree range search (`SEARCH TABLE USING INDEX`), avoiding temporary sorting structures (`USE TEMP B-TREE FOR ORDER BY`).
 
 ### Q3: Date-Bounded Settlement Reconciliation
 
@@ -83,7 +83,7 @@ An empirical benchmark comparing execution times before and after applying strat
 76|0|0|USE TEMP B-TREE FOR ORDER BY
 ```
 
-**Technical Assessment:** Execution latency reduced from `46.62 ms` to `33.28 ms`, delivering a **`1.4x` speedup**. The SQLite cost-based optimizer transitioned from a sequential scan (`SCAN TABLE`) across 50,000+ records to a logarithmic B-Tree range search (`SEARCH TABLE USING INDEX`), avoiding temporary sorting structures (`USE TEMP B-TREE FOR ORDER BY`).
+**Technical Assessment:** Execution latency reduced from `47.33 ms` to `34.19 ms`, delivering a **`1.4x` speedup**. The SQLite cost-based optimizer transitioned from a sequential scan (`SCAN TABLE`) across 50,000+ records to a logarithmic B-Tree range search (`SEARCH TABLE USING INDEX`), avoiding temporary sorting structures (`USE TEMP B-TREE FOR ORDER BY`).
 
 ### Q4: Dedicated Merchant GMV & Fee Audit
 
@@ -99,7 +99,7 @@ An empirical benchmark comparing execution times before and after applying strat
 14|0|121|SEARCH t USING INDEX idx_tx_merchant_status_amt (merchant_id=? AND status=?)
 ```
 
-**Technical Assessment:** Execution latency reduced from `36.79 ms` to `29.73 ms`, delivering a **`1.2x` speedup**. The SQLite cost-based optimizer transitioned from a sequential scan (`SCAN TABLE`) across 50,000+ records to a logarithmic B-Tree range search (`SEARCH TABLE USING INDEX`), avoiding temporary sorting structures (`USE TEMP B-TREE FOR ORDER BY`).
+**Technical Assessment:** Execution latency reduced from `37.39 ms` to `28.35 ms`, delivering a **`1.3x` speedup**. The SQLite cost-based optimizer transitioned from a sequential scan (`SCAN TABLE`) across 50,000+ records to a logarithmic B-Tree range search (`SEARCH TABLE USING INDEX`), avoiding temporary sorting structures (`USE TEMP B-TREE FOR ORDER BY`).
 
 ### Q5: 2-Hop Transfer Fan-Out Lineage
 
@@ -115,7 +115,7 @@ An empirical benchmark comparing execution times before and after applying strat
 10|0|60|SEARCH t2 USING INDEX idx_tx_source_status_time (source_account_id=? AND status=? AND initiated_at>?)
 ```
 
-**Technical Assessment:** Execution latency reduced from `312.12 ms` to `0.31 ms`, delivering a **`1000.3x` speedup**. The SQLite cost-based optimizer transitioned from a sequential scan (`SCAN TABLE`) across 50,000+ records to a logarithmic B-Tree range search (`SEARCH TABLE USING INDEX`), avoiding temporary sorting structures (`USE TEMP B-TREE FOR ORDER BY`).
+**Technical Assessment:** Execution latency reduced from `293.73 ms` to `0.13 ms`, delivering a **`2299.8x` speedup**. The SQLite cost-based optimizer transitioned from a sequential scan (`SCAN TABLE`) across 50,000+ records to a logarithmic B-Tree range search (`SEARCH TABLE USING INDEX`), avoiding temporary sorting structures (`USE TEMP B-TREE FOR ORDER BY`).
 
 ---
 
