@@ -57,6 +57,26 @@ When FinFlow introduced biometric verification (e.g., Apple FaceID vs Android Fi
   ```
 - In the Document Store, new attributes are ingested immediately into `doc-evt-00102` using `json_set` without schema locking, downtime, or backward-compatibility breakage.
 
+### 3.4 Graph Database: Fraud Syndicate and Money Laundering Ring Detection
+As implemented in `04_graph_model_demo.py`, the graph model encodes FinFlow's transaction network as a **Property Graph** with:
+- **Nodes:** Customers, Accounts, and Merchants with JSON property blobs.
+- **Edges:** Directed relationships (`OWNS`, `TRANSFERRED_TO`, `PAID`) with transfer amounts and transaction IDs as edge properties.
+- **Graph Traversal Queries:**
+  1. **1-Hop Neighbor Discovery:** Identifies all direct transfer recipients from a given account.
+  2. **Circular Transfer Detection (3-Hop Cycle):** Detects closed money loops (A → B → C → A) that indicate potential layering — a core AML red flag. The demo successfully detects a \$5,000 → \$4,800 → \$4,500 circular flow with \$500 net leakage per cycle.
+  3. **Recursive Multi-Hop Reachability:** Uses a recursive CTE to trace all accounts reachable from a starting node, revealing the full blast radius of a compromised account.
+
+**Why Graph over RDBMS for Fraud Detection?** Relational multi-hop joins degrade exponentially with path depth ($O(n^k)$ for $k$-hop joins across $n$ rows). Graph databases execute Cypher/Gremlin traversals in $O(k \cdot d)$ where $d$ is the average degree, making real-time fraud ring detection feasible at scale.
+
+### 3.5 Column-Family (Wide-Column) Store: Time-Series Transaction Event Feeds
+As implemented in `05_column_family_demo.py`, the column-family model simulates a Cassandra/HBase-style wide-column store for FinFlow's customer activity feed:
+- **Partition Key:** `customer_id` — ensures all events for a single customer are co-located on the same physical node, enabling ultra-fast partition scans.
+- **Clustering Key:** `event_timestamp` (descending) — maintains chronological ordering within each partition for efficient time-range queries.
+- **Sparse Columns:** Each event type has a different column set (a P2P transfer has `amount`, `currency`, `destination`; a login event has `device`, `biometric_method`, `location`). Columns not present simply don't exist in that row — there are no NULL penalties.
+- **Column-Level TTL:** Supports per-column expiration (e.g., session tokens expire after 24 hours), matching Cassandra's native TTL semantics.
+
+**Why Column-Family for Activity Feeds?** Write-optimized LSM-tree storage engines (Cassandra, HBase) deliver $O(1)$ partition writes regardless of table width, making them ideal for high-velocity event ingestion at hundreds of thousands of writes per second.
+
 ---
 
 ## 4. Academic Conclusion: Why Polyglot Persistence Wins

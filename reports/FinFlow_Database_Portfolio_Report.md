@@ -56,10 +56,13 @@
 * **Deliverable Evidence:** `01_acid_transactions.sql`, `02_concurrency_race_condition.py`, `03_isolation_levels_demo.py`, `04_deadlock_and_locking.py`, `concurrency_test_logs.md`.
 
 ### Portfolio 4: NoSQL & Advanced Data Models (7 Marks)
-* **Architecture:** Enterprise Polyglot Persistence combining Relational SQL for ACID ledgers, Document Model (MongoDB / JSON1) for heterogeneous webhook telemetry, and Key-Value (Redis) for idempotency caching.
-* **Implementation:** Built a document engine with collection validation and functional B-tree indexing over nested JSON paths (`$.risk_signals.fraud_score` and `$.device_telemetry.is_jailbroken`).
-* **Querying & Schema Evolution:** Demonstrated nested field filtering, platform aggregation pipelines (computing average risk by client operating system), and in-place document enrichment (`json_set`) without catalog locks or schema migrations.
-* **Deliverable Evidence:** `finflow_nosql.py`, `02_sample_documents.json`, `03_nosql_queries_and_aggregations.py`, `nosql_suitability_report.md`.
+* **Architecture:** Enterprise Polyglot Persistence combining Relational SQL for ACID ledgers, Document Model (MongoDB / JSON1) for heterogeneous webhook telemetry, In-Memory Key-Value (Redis) for idempotency caching, Wide-Column / Column-Family (Cassandra-style) for time-series activity feeds, and Property Graph (Neo4j-style) for anti-money laundering fraud ring detection.
+* **Implementation:** 
+  1. *Document Store (`finflow_nosql.py`, `02_sample_documents.json`, `03_nosql_queries_and_aggregations.py`):* Collection validation and functional B-tree indexing over nested JSON paths (`$.risk_signals.fraud_score` and `$.device_telemetry.is_jailbroken`). Demonstrated nested field filtering, platform aggregation pipelines (average risk score by client OS), and in-place document enrichment (`json_set`) without DDL migration downtime.
+  2. *Key-Value Cache:* Sub-millisecond idempotency token check with automatic 86,400s TTL expiration to prevent payment duplication.
+  3. *Graph Database Model (`04_graph_model_demo.py`):* Property Graph using adjacency relations modeling Accounts/Customers (Nodes) and Transfers/Ownership (Edges). Implemented 1-hop neighbor discovery, circular money loop detection (identifying a 3-hop \$5,000 → \$4,800 → \$4,500 laundering cycle), and recursive multi-hop path reachability.
+  4. *Column-Family Model (`05_column_family_demo.py`):* Cassandra-style wide-column store using partition key (`customer_id`), clustering key (`event_timestamp DESC`), and sparse column cells. Demonstrated partition scans, sparse column projections, time-range slices, and per-column TTL.
+* **Deliverable Evidence:** `finflow_nosql.py`, `02_sample_documents.json`, `03_nosql_queries_and_aggregations.py`, `04_graph_model_demo.py`, `05_column_family_demo.py`, `nosql_suitability_report.md`.
 
 ### Portfolio 5: Distributed and Cloud Database Architecture (6 Marks)
 * **Horizontal Sharding:** Implemented consistent hash partitioning ($\text{MD5}(\text{customer\_id}) \pmod 3$) distributing accounts across 3 independent physical database nodes, co-locating customer wallets to maximize single-shard transaction locality.

@@ -120,7 +120,7 @@ def build_docx():
         ("Portfolio 1: Database Design", "7", "8 relational tables in BCNF, constraints, seed dataset, high-res ERD", "Zero redundancy; eliminates insertion, update & deletion anomalies."),
         ("Portfolio 2: Query Optimisation", "7", "50,000 txs benchmarked across 5 queries, composite/covering B-trees", "Up to 2,299x speedup; table scans replaced with index seeks."),
         ("Portfolio 3: Transactions & Concurrency", "7", "Multi-threaded race condition tests, OCC version column, 2PL lock ordering", "Lost update double-spend prevented; deadlocks eliminated."),
-        ("Portfolio 4: NoSQL & Advanced Models", "7", "Document store with functional JSON indexes, Redis-style TTL cache", "Schema-free telemetry enrichment without DDL migration downtime."),
+        ("Portfolio 4: NoSQL & Advanced Models", "7", "Document, Key-Value, Column-Family & Graph models", "Idempotency TTL, circular fraud detection, schema-free telemetry."),
         ("Portfolio 5: Distributed & Cloud", "6", "Horizontal hash sharding, 2PC consensus, primary-replica crash failover", "RTO < 3s, RPO = 0; formal CAP (CP) & PACELC (PC/EC) validation.")
     ]
 
@@ -165,8 +165,8 @@ def build_docx():
     p_t3.add_run("Live multi-threaded execution demonstrated that unshielded withdrawals cause severe double-spending (total $1,500 debited from a $1,000 account). Implementing Optimistic Concurrency Control (OCC with version column) and deterministic lock ordering completely prevented lost updates and eliminated circular deadlock cycles.")
 
     p_t4 = doc.add_paragraph()
-    p_t4.add_run("Portfolio 4 (NoSQL Document Store & Polyglot Persistence): ").bold = True
-    p_t4.add_run("To ingest polymorphic webhook payloads and client device telemetry, FinFlow utilizes a Document Store with functional JSON B-tree indexes, alongside an In-Memory Key-Value store with TTL for idempotency deduplication.")
+    p_t4.add_run("Portfolio 4 (NoSQL & Advanced Data Models): ").bold = True
+    p_t4.add_run("Implemented all four NoSQL paradigms under FinFlow: a Document Store with functional JSON B-tree indexes for device telemetry, an in-memory Key-Value store with TTL for idempotency deduplication, a Column-Family model for customer time-series activity feeds, and a Property Graph model detecting circular money laundering rings through multi-hop traversals.")
 
     p_t5 = doc.add_paragraph()
     p_t5.add_run("Portfolio 5 (Distributed Sharding & Disaster Failover): ").bold = True
@@ -388,7 +388,7 @@ def build_pdf():
         [Paragraph("<b>P1: Database Design</b>", table_cell), Paragraph("7", table_cell), Paragraph("8 tables in BCNF, constraints, seed dataset, high-res ERD", table_cell), Paragraph("Zero redundancy; eliminates all insertion/update/deletion anomalies", table_cell)],
         [Paragraph("<b>P2: Query Optimisation</b>", table_cell), Paragraph("7", table_cell), Paragraph("50,000 txs benchmarked, composite/covering B-trees", table_cell), Paragraph("Up to <b>2,299x speedup</b>; table scans eliminated", table_cell)],
         [Paragraph("<b>P3: Transactions & Concurrency</b>", table_cell), Paragraph("7", table_cell), Paragraph("Multi-threaded tests, OCC version column, 2PL lock ordering", table_cell), Paragraph("Lost update double-spend prevented; deadlocks eliminated", table_cell)],
-        [Paragraph("<b>P4: NoSQL & Advanced Models</b>", table_cell), Paragraph("7", table_cell), Paragraph("Document store with JSON indexes, Redis-style TTL cache", table_cell), Paragraph("Dynamic schema evolution without DDL migration downtime", table_cell)],
+        [Paragraph("<b>P4: NoSQL & Advanced Models</b>", table_cell), Paragraph("7", table_cell), Paragraph("Document, Key-Value, Column-Family & Graph models", table_cell), Paragraph("TTL caching, circular fraud detection, schema evolution", table_cell)],
         [Paragraph("<b>P5: Distributed & Cloud</b>", table_cell), Paragraph("6", table_cell), Paragraph("Hash sharding, 2PC consensus, primary crash failover", table_cell), Paragraph("<b>RTO &lt; 3s, RPO = 0</b>; formal CAP/PACELC validation", table_cell)]
     ]
     t_sum = Table(summary_data, colWidths=[115, 35, 185, 169])
@@ -420,7 +420,7 @@ def build_pdf():
         story.append(Paragraph("Figure 2: Empirical Workload Query Latency Benchmark (Unindexed vs. Indexed).", caption_style))
 
     p345_text = """<b>Portfolio 3 (Transactions & Concurrency Control):</b> Multi-threaded simulations proved that unshielded withdrawals cause double-spending ($1,500 debited from $1,000 balance). Optimistic Concurrency Control (OCC with version column) and deterministic lock ordering completely prevented lost updates and eliminated circular deadlock cycles.<br/>
-    <b>Portfolio 4 (NoSQL Document Store):</b> Implemented a Document Store with functional JSON B-tree indexes for device telemetry and an in-memory Key-Value store with TTL for idempotency deduplication.<br/>
+    <b>Portfolio 4 (NoSQL & Advanced Models):</b> Implemented Document, Key-Value, Column-Family (time-series events), and Graph models (detecting circular money laundering rings via recursive traversals).<br/>
     <b>Portfolio 5 (Distributed Cloud Database):</b> Consistent hash sharding partitioned accounts across 3 nodes with Two-Phase Commit (2PC) orchestrating cross-shard consistency. Automated quorum leader election promotes the highest-LSN replica upon primary crash within 3.0 seconds with zero data loss (RPO = 0)."""
     story.append(Paragraph(p345_text, body_style))
 

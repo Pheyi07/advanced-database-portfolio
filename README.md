@@ -70,6 +70,8 @@ advanced-database-portfolio/
 │   ├── 01_nosql_document_store.py      # Document collection manager with functional B-tree JSON indexes
 │   ├── 02_sample_documents.json        # Rich polymorphic payment webhook & device telemetry documents
 │   ├── 03_nosql_queries_and_aggregations.py # Nested JSON filtering, platform aggregations, and in-place updates
+│   ├── 04_graph_model_demo.py          # Property Graph model: adjacency tables, 1-hop traversals & fraud ring detection
+│   ├── 05_column_family_demo.py        # Wide-Column store: sparse schema, partition scans, clustering keys & TTL
 │   ├── nosql_suitability_report.md     # Comparative model evaluation & Polyglot Persistence justification
 │   └── README.md                       # Activity guide and schema-free evolution overview
 │
@@ -99,7 +101,7 @@ advanced-database-portfolio/
 | **Portfolio 1: Database Design** | 7 | 8 normalized tables in BCNF, constraints, seed dataset, high-res ERD graphic | Zero redundancy; eliminates insertion, update & deletion anomalies |
 | **Portfolio 2: Query Optimisation** | 7 | 50,000 transactions, 65,000+ ledger entries benchmarked across 5 queries | **Up to 1,000x query speedup**; table scans eliminated via covering B-trees |
 | **Portfolio 3: Transactions & Concurrency** | 7 | Multi-threaded race condition tests, OCC version validation, deadlock ordering | **Lost update double-spend prevented**; strict balance invariants preserved |
-| **Portfolio 4: NoSQL & Advanced Models** | 7 | Document store with functional JSON indexes, polymorphic schemas, Redis TTL cache | Sub-millisecond idempotency lookup; schema evolution without DDL migrations |
+| **Portfolio 4: NoSQL & Advanced Models** | 7 | Document, Key-Value, Column-Family, and Graph models with empirical queries | Sub-millisecond idempotency lookup; circular fraud ring detection; schema-free event telemetry |
 | **Portfolio 5: Distributed & Cloud** | 6 | Horizontal sharding by customer hash, 2PC consensus, replica failover simulation | **RTO < 3.0 seconds, RPO = 0**; formal CAP (CP) & PACELC (PC/EC) validation |
 | **Final Documentation & Reflection** | 6 | 2–3 page summary report, comprehensive reflection, references, AI declaration | LMS-ready PDF & DOCX reports adhering to academic rubric |
 | **Total** | **40** | **Complete Practical Evidence** | **100% Production-Tested & Verified** |

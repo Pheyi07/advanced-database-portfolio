@@ -64,6 +64,12 @@ def main():
         ("Portfolio 4: NoSQL JSON Aggregations & Schema Mutation Queries", 
          [sys.executable, os.path.join(base_dir, "portfolio-4-nosql", "03_nosql_queries_and_aggregations.py")]),
         
+        ("Portfolio 4: Graph Database Model — Fraud Ring Detection", 
+         [sys.executable, os.path.join(base_dir, "portfolio-4-nosql", "04_graph_model_demo.py")]),
+        
+        ("Portfolio 4: Column-Family (Wide-Column) Time-Series Events", 
+         [sys.executable, os.path.join(base_dir, "portfolio-4-nosql", "05_column_family_demo.py")]),
+        
         ("Portfolio 5: Distributed Sharding & Cross-Shard 2PC Consensus", 
          [sys.executable, os.path.join(base_dir, "portfolio-5-distributed-cloud", "01_sharding_simulation.py")]),
         
