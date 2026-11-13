@@ -1,0 +1,169 @@
+[
+  {
+    "_id": "doc-evt-00101",
+    "event_type": "PAYMENT_INITIATED",
+    "transaction_id": "tx-bulk-000101",
+    "timestamp": "2026-11-01T10:15:30Z",
+    "customer": {
+      "customer_id": "cust-001",
+      "kyc_tier": 3,
+      "country_code": "NGA"
+    },
+    "payment_method": {
+      "type": "CARD",
+      "network": "MASTERCARD",
+      "card_bin": "539983",
+      "last4": "4021",
+      "issuer": "Access Bank PLC",
+      "3ds_authenticated": true
+    },
+    "device_telemetry": {
+      "ip_address": "197.210.64.12",
+      "ip_country": "NGA",
+      "device_fingerprint": "dfp-a89b-77c1-09df",
+      "os": "iOS",
+      "os_version": "18.1",
+      "app_version": "3.4.2",
+      "is_jailbroken": false,
+      "biometrics_used": "FaceID"
+    },
+    "risk_signals": {
+      "fraud_score": 14.5,
+      "velocity_1h_count": 2,
+      "velocity_24h_amount_usd": 1250.00,
+      "device_reputation": "TRUSTED",
+      "rules_triggered": []
+    },
+    "audit_trail": [
+      {"stage": "PAYMENT_ATTEMPT", "timestamp": "2026-11-01T10:15:30Z", "status": "PENDING"},
+      {"stage": "3DS_VERIFICATION", "timestamp": "2026-11-01T10:15:32Z", "status": "PASSED"},
+      {"stage": "SETTLEMENT_POSTED", "timestamp": "2026-11-01T10:15:33Z", "status": "SUCCESS"}
+    ]
+  },
+  {
+    "_id": "doc-evt-00102",
+    "event_type": "SUSPICIOUS_PAYMENT_BLOCKED",
+    "transaction_id": "tx-bulk-000102",
+    "timestamp": "2026-11-01T11:42:10Z",
+    "customer": {
+      "customer_id": "cust-002",
+      "kyc_tier": 1,
+      "country_code": "NGA"
+    },
+    "payment_method": {
+      "type": "VIRTUAL_ACCOUNT",
+      "network": "NIBSS_INSTANT_PAYMENTS",
+      "routing_code": "000014"
+    },
+    "device_telemetry": {
+      "ip_address": "185.220.101.5",
+      "ip_country": "ROU",
+      "device_fingerprint": "dfp-f901-33e2-8812",
+      "os": "Android",
+      "os_version": "14",
+      "app_version": "3.2.0",
+      "is_jailbroken": true,
+      "biometrics_used": "NONE"
+    },
+    "risk_signals": {
+      "fraud_score": 92.0,
+      "velocity_1h_count": 18,
+      "velocity_24h_amount_usd": 28400.00,
+      "device_reputation": "COMPROMISED",
+      "rules_triggered": [
+        "RULE_GEO_IP_MISMATCH",
+        "RULE_DEVICE_ROOTED",
+        "RULE_VELOCITY_SPIKE"
+      ]
+    },
+    "audit_trail": [
+      {"stage": "PAYMENT_ATTEMPT", "timestamp": "2026-11-01T11:42:10Z", "status": "PENDING"},
+      {"stage": "RISK_EVALUATION", "timestamp": "2026-11-01T11:42:11Z", "status": "REJECTED"}
+    ]
+  },
+  {
+    "_id": "doc-evt-00103",
+    "event_type": "CROSS_BORDER_REMITTANCE",
+    "transaction_id": "tx-bulk-000103",
+    "timestamp": "2026-11-02T08:20:15Z",
+    "customer": {
+      "customer_id": "cust-003",
+      "kyc_tier": 3,
+      "country_code": "GBR"
+    },
+    "payment_method": {
+      "type": "OPEN_BANKING_API",
+      "network": "FASTER_PAYMENTS_UK",
+      "bank_bic": "BARCGB22"
+    },
+    "device_telemetry": {
+      "ip_address": "82.165.197.1",
+      "ip_country": "GBR",
+      "device_fingerprint": "dfp-44c1-2290-77a1",
+      "os": "macOS",
+      "os_version": "15.0",
+      "app_version": "Web-Portal-2.1",
+      "is_jailbroken": false,
+      "biometrics_used": "TouchID"
+    },
+    "risk_signals": {
+      "fraud_score": 11.2,
+      "velocity_1h_count": 1,
+      "velocity_24h_amount_usd": 4500.00,
+      "device_reputation": "TRUSTED",
+      "rules_triggered": []
+    },
+    "audit_trail": [
+      {"stage": "PAYMENT_ATTEMPT", "timestamp": "2026-11-02T08:20:15Z", "status": "PENDING"},
+      {"stage": "FX_QUOTE_LOCKED", "timestamp": "2026-11-02T08:20:16Z", "status": "CONFIRMED"},
+      {"stage": "SETTLEMENT_POSTED", "timestamp": "2026-11-02T08:20:18Z", "status": "SUCCESS"}
+    ]
+  },
+  {
+    "_id": "doc-evt-00104",
+    "event_type": "MERCHANT_CHECKOUT_WEBHOOK",
+    "transaction_id": "tx-bulk-000104",
+    "timestamp": "2026-11-02T14:12:00Z",
+    "customer": {
+      "customer_id": "cust-004",
+      "kyc_tier": 3,
+      "country_code": "FRA"
+    },
+    "merchant": {
+      "merchant_id": "merch-001",
+      "category": "E-COMMERCE",
+      "webhook_endpoint": "https://api.merchant.com/finflow/callback"
+    },
+    "payment_method": {
+      "type": "CARD",
+      "network": "VISA",
+      "card_bin": "411111",
+      "last4": "1111",
+      "issuer": "BNP Paribas",
+      "3ds_authenticated": true
+    },
+    "device_telemetry": {
+      "ip_address": "81.255.45.10",
+      "ip_country": "FRA",
+      "device_fingerprint": "dfp-bb77-1122-3344",
+      "os": "Android",
+      "os_version": "15",
+      "app_version": "3.4.1",
+      "is_jailbroken": false,
+      "biometrics_used": "Fingerprint"
+    },
+    "risk_signals": {
+      "fraud_score": 22.8,
+      "velocity_1h_count": 3,
+      "velocity_24h_amount_usd": 680.00,
+      "device_reputation": "TRUSTED",
+      "rules_triggered": []
+    },
+    "audit_trail": [
+      {"stage": "PAYMENT_ATTEMPT", "timestamp": "2026-11-02T14:12:00Z", "status": "PENDING"},
+      {"stage": "CARD_AUTHORIZATION", "timestamp": "2026-11-02T14:12:01Z", "status": "APPROVED"},
+      {"stage": "SETTLEMENT_POSTED", "timestamp": "2026-11-02T14:12:03Z", "status": "SUCCESS"},
+      {"stage": "WEBHOOK_DISPATCHED", "timestamp": "2026-11-02T14:12:04Z", "status": "HTTP_200_OK"}
+    ]
+  }
+]
