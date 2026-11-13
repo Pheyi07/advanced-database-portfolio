@@ -1,0 +1,92 @@
+[
+  {
+    "id": "Q1",
+    "name": "Ledger Running Balance Window Audit",
+    "time_unindexed_ms": 19.62,
+    "plan_unindexed": [
+      "3|0|0|CO-ROUTINE (subquery-2)",
+      "8|3|46|SEARCH a USING INDEX sqlite_autoindex_accounts_1 (account_id=?)",
+      "14|3|216|SCAN l",
+      "44|3|0|USE TEMP B-TREE FOR LAST 2 TERMS OF ORDER BY",
+      "74|0|196|SCAN (subquery-2)",
+      "138|0|0|USE TEMP B-TREE FOR ORDER BY"
+    ],
+    "time_indexed_ms": 11.77,
+    "speedup_factor": 1.67,
+    "plan_indexed": [
+      "3|0|0|CO-ROUTINE (subquery-2)",
+      "9|3|38|SEARCH a USING INDEX sqlite_autoindex_accounts_1 (account_id=?)",
+      "15|3|95|SEARCH l USING INDEX idx_ledger_account_time (account_id=?)",
+      "50|0|85|SCAN (subquery-2)",
+      "114|0|0|USE TEMP B-TREE FOR ORDER BY"
+    ]
+  },
+  {
+    "id": "Q2",
+    "name": "High-Risk Critical AML Investigations",
+    "time_unindexed_ms": 4.59,
+    "plan_unindexed": [
+      "10|0|216|SCAN a",
+      "18|0|46|SEARCH t USING INDEX sqlite_autoindex_transactions_1 (transaction_id=?)",
+      "23|0|46|SEARCH acc USING INDEX sqlite_autoindex_accounts_1 (account_id=?)",
+      "28|0|46|SEARCH c USING INDEX sqlite_autoindex_customers_1 (customer_id=?)",
+      "50|0|0|USE TEMP B-TREE FOR ORDER BY"
+    ],
+    "time_indexed_ms": 4.36,
+    "speedup_factor": 1.05,
+    "plan_indexed": [
+      "10|0|106|SCAN a",
+      "18|0|43|SEARCH t USING INDEX sqlite_autoindex_transactions_1 (transaction_id=?)",
+      "23|0|38|SEARCH acc USING INDEX sqlite_autoindex_accounts_1 (account_id=?)",
+      "28|0|36|SEARCH c USING INDEX sqlite_autoindex_customers_1 (customer_id=?)",
+      "50|0|0|USE TEMP B-TREE FOR ORDER BY"
+    ]
+  },
+  {
+    "id": "Q3",
+    "name": "Date-Bounded Settlement Reconciliation",
+    "time_unindexed_ms": 46.62,
+    "plan_unindexed": [
+      "7|0|216|SCAN t",
+      "15|0|0|USE TEMP B-TREE FOR GROUP BY",
+      "74|0|0|USE TEMP B-TREE FOR ORDER BY"
+    ],
+    "time_indexed_ms": 33.28,
+    "speedup_factor": 1.4,
+    "plan_indexed": [
+      "8|0|104|SEARCH t USING INDEX idx_tx_status_time_curr (status=? AND initiated_at>? AND initiated_at<?)",
+      "17|0|0|USE TEMP B-TREE FOR GROUP BY",
+      "76|0|0|USE TEMP B-TREE FOR ORDER BY"
+    ]
+  },
+  {
+    "id": "Q4",
+    "name": "Dedicated Merchant GMV & Fee Audit",
+    "time_unindexed_ms": 36.79,
+    "plan_unindexed": [
+      "8|0|46|SEARCH m USING INDEX sqlite_autoindex_merchants_1 (merchant_id=?)",
+      "13|0|216|SCAN t"
+    ],
+    "time_indexed_ms": 29.73,
+    "speedup_factor": 1.24,
+    "plan_indexed": [
+      "9|0|32|SEARCH m USING INDEX sqlite_autoindex_merchants_1 (merchant_id=?)",
+      "14|0|121|SEARCH t USING INDEX idx_tx_merchant_status_amt (merchant_id=? AND status=?)"
+    ]
+  },
+  {
+    "id": "Q5",
+    "name": "2-Hop Transfer Fan-Out Lineage",
+    "time_unindexed_ms": 312.12,
+    "plan_unindexed": [
+      "4|0|216|SCAN t1",
+      "25|0|53|SEARCH t2 USING AUTOMATIC PARTIAL COVERING INDEX (status=? AND source_account_id=?)"
+    ],
+    "time_indexed_ms": 0.31,
+    "speedup_factor": 1000.26,
+    "plan_indexed": [
+      "5|0|66|SEARCH t1 USING COVERING INDEX idx_tx_source_status_time (source_account_id=? AND status=?)",
+      "10|0|60|SEARCH t2 USING INDEX idx_tx_source_status_time (source_account_id=? AND status=? AND initiated_at>?)"
+    ]
+  }
+]
