@@ -4,7 +4,7 @@
 **Academic Session:** 2026/2027 Academic Session | First Semester Continuous Assessment  
 **Total Assessment Marks:** 40 Marks  
 **Submission Platform:** LMS + GitHub  
-**Author / Student:** Postgraduate Researcher (MIVA MIT Candidate)  
+**Author / Student:** Olopha Oluwafeyikemi (Student ID: 301930634)  
 
 ---
 
@@ -84,9 +84,9 @@ advanced-database-portfolio/
 │   └── README.md                       # Distributed systems engineering documentation
 │
 ├── reports/
-│   ├── FinFlow_Database_Portfolio_Report.md   # Complete 12-page comprehensive master technical report
-│   ├── FinFlow_Database_Portfolio_Report.docx # Formatted Word submission report (LMS ready)
-│   └── FinFlow_Database_Portfolio_Report.pdf  # Publication-grade PDF submission document (LMS ready)
+│   ├── Olopha_Oluwafeyikemi_301930634_MIT8103.md   # Complete master technical report
+│   ├── Olopha_Oluwafeyikemi_301930634_MIT8103.docx # Formatted Word submission report (LMS ready)
+│   └── Olopha_Oluwafeyikemi_301930634_MIT8103.pdf  # PDF submission document (LMS ready)
 │
 ├── run_all_experiments.py              # Master test runner executing all 5 portfolio suites end-to-end
 └── README.md                           # Master repository documentation (this file)

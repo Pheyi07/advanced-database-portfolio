@@ -1,5 +1,6 @@
 # Portfolio 5: Distributed and Cloud Database Exercise
 
+**Student:** Olopha Oluwafeyikemi (Student ID: 301930634)  
 **Course:** MIT 8103 Advanced Database Systems  
 **Case Study:** FinFlow Global Systems  
 **Deliverables Covered:**

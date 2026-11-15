@@ -22,8 +22,8 @@ ERD_IMG = os.path.join(ROOT_DIR, 'portfolio-1-database-design', 'schema_diagram.
 BENCH_IMG = os.path.join(ROOT_DIR, 'portfolio-2-query-optimisation', 'performance_comparison.png')
 ARCH_IMG = os.path.join(ROOT_DIR, 'portfolio-5-distributed-cloud', 'architecture_diagram.png')
 
-DOCX_OUT = os.path.join(BASE_DIR, 'FinFlow_Database_Portfolio_Report.docx')
-PDF_OUT = os.path.join(BASE_DIR, 'FinFlow_Database_Portfolio_Report.pdf')
+DOCX_OUT = os.path.join(BASE_DIR, 'Olopha_Oluwafeyikemi_301930634_MIT8103.docx')
+PDF_OUT = os.path.join(BASE_DIR, 'Olopha_Oluwafeyikemi_301930634_MIT8103.pdf')
 
 def set_cell_background(cell, fill_hex):
     tcPr = cell._tc.get_or_add_tcPr()
@@ -66,7 +66,7 @@ def build_docx():
     table_meta = doc.add_table(rows=4, cols=2)
     table_meta.alignment = WD_TABLE_ALIGNMENT.CENTER
     meta_data = [
-        ("Candidate Name / Student ID:", "Postgraduate Research Candidate (MIT Programme)"),
+        ("Candidate Name / Student ID:", "Olopha Oluwafeyikemi / 301930634"),
         ("Course & Academic Session:", "MIT 8103 Advanced Database Systems (2026/2027 Session)"),
         ("Selected Case Study:", "FinFlow Global Payment Systems (Cross-Border Digital Banking)"),
         ("GitHub Repository Link:", "https://github.com/Pheyi07/advanced-database-portfolio")
@@ -356,7 +356,7 @@ def build_pdf():
 
     # Meta Table
     meta_data = [
-        [Paragraph("<b>Candidate Name / ID:</b>", table_cell), Paragraph("Postgraduate Research Candidate (MIT Programme)", table_cell)],
+        [Paragraph("<b>Candidate Name / ID:</b>", table_cell), Paragraph("Olopha Oluwafeyikemi / 301930634", table_cell)],
         [Paragraph("<b>Course & Session:</b>", table_cell), Paragraph("MIT 8103 Advanced Database Systems (2026/2027 Session)", table_cell)],
         [Paragraph("<b>Selected Case Study:</b>", table_cell), Paragraph("FinFlow Global Payment Systems (Cross-Border Digital Banking)", table_cell)],
         [Paragraph("<b>GitHub Repository:</b>", table_cell), Paragraph("<u>https://github.com/Pheyi07/advanced-database-portfolio</u>", table_cell)]

@@ -1,5 +1,6 @@
 # Portfolio 1: Database Design and Modelling
 
+**Student:** Olopha Oluwafeyikemi (Student ID: 301930634)  
 **Course:** MIT 8103 Advanced Database Systems  
 **Case Study:** FinFlow Global Systems (Fintech / Cross-Border Digital Banking)  
 **Deliverables Covered:**

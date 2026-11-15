@@ -1,5 +1,6 @@
 # Portfolio 2: Query Processing and Optimisation
 
+**Student:** Olopha Oluwafeyikemi (Student ID: 301930634)  
 **Course:** MIT 8103 Advanced Database Systems  
 **Case Study:** FinFlow Global Systems  
 **Deliverables Covered:**

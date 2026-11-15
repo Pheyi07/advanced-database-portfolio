@@ -4,7 +4,7 @@
 
 ---
 
-* **Candidate:** Postgraduate Student (MIT Candidate)
+* **Candidate:** Olopha Oluwafeyikemi (Student ID: 301930634)
 * **Course:** MIT 8103 — Advanced Database Systems (2026/2027 Session)
 * **Assessment Weight:** 40 Marks
 * **Selected Case Study:** FinFlow Global Payment Systems (Cross-Border Digital Banking)

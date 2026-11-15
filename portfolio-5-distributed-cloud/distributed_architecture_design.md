@@ -1,5 +1,6 @@
 # Portfolio 5: Distributed and Cloud Database Architecture Design
 
+**Student:** Olopha Oluwafeyikemi (Student ID: 301930634)  
 **Course:** MIT 8103 Advanced Database Systems  
 **Case Study:** FinFlow Global Systems  
 **Assessment Topic:** Horizontal Sharding, Multi-Region Replication, High Availability & CAP/PACELC Trade-offs  

@@ -1,5 +1,6 @@
 # Portfolio 4: NoSQL and Advanced Data Models Suitability Analysis
 
+**Student:** Olopha Oluwafeyikemi (Student ID: 301930634)  
 **Course:** MIT 8103 Advanced Database Systems  
 **Case Study:** FinFlow Global Systems  
 **Architecture Paradigm:** Enterprise Polyglot Persistence  

@@ -1,5 +1,6 @@
 # Portfolio 1: Relational Database Design, Schema & Normalization Analysis
 
+**Student:** Olopha Oluwafeyikemi (Student ID: 301930634)  
 **Student Assessment:** Continuous Assessment Portfolio (MIT 8103 Advanced Database Systems)  
 **Institution:** School of Postgraduate Studies, MIVA Open University  
 **Case Study:** FinFlow Global Systems (FinTech & Cross-Border Payment Infrastructure)  
