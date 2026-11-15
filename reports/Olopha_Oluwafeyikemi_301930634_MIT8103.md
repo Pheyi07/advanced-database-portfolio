@@ -43,7 +43,7 @@
   3. Date-bounded 7-day settlement volume and fee reconciliation across currency pairs.
   4. Top merchant GMV and commission yield computation using Common Table Expressions (CTEs).
   5. Multi-hop fund lineage traversal using recursive CTEs to detect transaction layering.
-* **Indexing Strategy & Empirical Gains:** Created composite B-trees, covering indexes, and partial indexes. Execution plans transitioned from expensive full table scans (`SCAN TABLE`) to logarithmic index range searches (`SEARCH TABLE USING INDEX`). Query 5 execution latency plummeted from **293.73 ms to 0.13 ms (a 2,299x speedup)**.
+* **Indexing Strategy & Empirical Gains:** Created composite B-trees, covering indexes, and partial indexes. Execution plans transitioned from expensive full table scans (`SCAN TABLE`) to logarithmic index range searches (`SEARCH TABLE USING INDEX`). Query 5, the two-hop transfer trace, fell from **314.06 ms to 0.33 ms (a 954× speedup)**. These figures are the ones saved in `benchmark_results.json`. The AML investigation query did not get faster after indexing (3.76 ms to 5.00 ms).
 * **Deliverable Evidence:** `01_workload_queries.sql`, `02_indexing_strategy.sql`, `03_benchmark_runner.py`, `performance_comparison.png`, `execution_plans.md`.
 
 ### Portfolio 3: Transactions & Concurrency Control (7 Marks)
@@ -77,7 +77,7 @@
 
 Engaging in this continuous practical assessment has provided deep, hands-on insight into advanced database engineering principles:
 1. **Relational Correctness is Non-Negotiable in FinTech:** While modern NoSQL engines offer remarkable write throughput and horizontal elasticity, financial ledger accounting fundamentally requires mathematical conservation of funds and strict ACID serializability. Double-entry general ledger bookkeeping implemented in Portfolio 1 and 3 ensures that every transaction is balanced to zero.
-2. **Indexing is a Trade-Off, Not a Silver Bullet:** Benchmark analysis in Portfolio 2 demonstrated that indexing is highly sensitive to selectivity and cardinality. Creating wide covering indexes dramatically accelerates selective queries (reducing latency from 293ms to 0.13ms) but increases write amplification and disk footprint.
+2. **Indexing is a Trade-Off, Not a Silver Bullet:** Benchmark analysis in Portfolio 2 demonstrated that indexing is highly sensitive to selectivity and cardinality. A covering index cut the selective two-hop lineage query from 314.06 ms to 0.33 ms. The same indexes did not help the less selective AML query, which went from 3.76 ms to 5.00 ms. Indexes also increase write cost and disk use.
 3. **The Necessity of Polyglot Persistence:** Trying to force polymorphic JSON webhook payloads from third-party payment gateways into a static relational schema leads to sparse tables, null columns, and dangerous production DDL migrations. Adopting document stores for event telemetry alongside in-memory key-value stores for idempotency tokens represents the optimal industry paradigm.
 4. **Distributed Systems Physics:** Network partitions are unavoidable in multi-region cloud deployments. Working through CAP and PACELC trade-offs reinforced that financial institutions must consciously choose consistency over availability (CP) for balances, while accepting eventual consistency (AP) for non-financial activity notifications.
 
@@ -85,13 +85,8 @@ Engaging in this continuous practical assessment has provided deep, hands-on ins
 
 ## 4. Academic Integrity & AI Use Declaration
 
-* **AI System Used:** Antigravity AI Assistant (Google DeepMind Gemini 3.8 Flash).
-* **Nature of Assistance:** Used as an intelligent pair-programming assistant to brainstorm realistic fintech edge cases, synthesize high-volume mock datasets (50,000+ rows), scaffold initial SQL schemas, and write matplotlib visualization scripts.
-* **Student Review & Verification:**
-  - All SQL constraints, foreign key actions, and check clauses were manually reviewed and verified for transactional soundness.
-  - The multi-threaded concurrency harness and distributed 2PC coordinator were compiled, executed, and validated in real time to capture genuine thread contention, lock acquisition states, and failover elections.
-  - Query execution plans (`EXPLAIN QUERY PLAN`) were thoroughly analyzed against cost-based optimizer heuristics.
-  - All written documentation and technical conclusions reflect the student's independent synthesis, rigorous understanding, and verified ownership of the submitted work.
+* **AI tools used:** Cursor, an AI coding assistant. It was used to review this portfolio, publish the GitHub repository, place the candidate name and student ID on the submission, and correct the benchmark figures so they match `benchmark_results.json`. AI assistance was also used while producing the practical work, including SQL scaffolding, synthetic datasets of about 50,000 rows, and charts.
+* **Student review:** Olopha Oluwafeyikemi (301930634) is responsible for the submitted work. The schema constraints, concurrency tests, query plans, and this report were checked against the files in the repository before submission.
 
 ---
 

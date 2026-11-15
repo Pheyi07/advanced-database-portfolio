@@ -118,7 +118,7 @@ def build_docx():
 
     rows_data = [
         ("Portfolio 1: Database Design", "7", "8 relational tables in BCNF, constraints, seed dataset, high-res ERD", "Zero redundancy; eliminates insertion, update & deletion anomalies."),
-        ("Portfolio 2: Query Optimisation", "7", "50,000 txs benchmarked across 5 queries, composite/covering B-trees", "Up to 2,299x speedup; table scans replaced with index seeks."),
+        ("Portfolio 2: Query Optimisation", "7", "50,000 txs benchmarked across 5 queries, composite/covering B-trees", "Query 5: 314.06 ms to 0.33 ms (954x). The AML query did not get faster."),
         ("Portfolio 3: Transactions & Concurrency", "7", "Multi-threaded race condition tests, OCC version column, 2PL lock ordering", "Lost update double-spend prevented; deadlocks eliminated."),
         ("Portfolio 4: NoSQL & Advanced Models", "7", "Document, Key-Value, Column-Family & Graph models", "Idempotency TTL, circular fraud detection, schema-free telemetry."),
         ("Portfolio 5: Distributed & Cloud", "6", "Horizontal hash sharding, 2PC consensus, primary-replica crash failover", "RTO < 3s, RPO = 0; formal CAP (CP) & PACELC (PC/EC) validation.")
@@ -152,7 +152,7 @@ def build_docx():
 
     p_t2 = doc.add_paragraph()
     p_t2.add_run("Portfolio 2 (Query Processing & Indexing): ").bold = True
-    p_t2.add_run("Under an enterprise benchmark of 50,000 transactions and 66,000+ ledger entries, creating targeted composite B-trees and covering indexes eliminated temporary in-memory B-tree sorts. Query 5 (Recursive multi-hop lineage) saw latency drop from 293.73 ms to 0.13 ms (a 2,299x speedup).")
+    p_t2.add_run("Under a benchmark of about 50,000 transactions and 66,000 ledger entries, composite and covering indexes were added. Query 5 (two-hop lineage) fell from 314.06 ms to 0.33 ms (a 954x speedup), matching benchmark_results.json. The AML query went from 3.76 ms to 5.00 ms, so indexing did not help every workload.")
     if os.path.exists(BENCH_IMG):
         doc.add_picture(BENCH_IMG, width=Inches(5.8))
         p_cap2 = doc.add_paragraph("Figure 2: Empirical Workload Query Latency Benchmark (Unindexed vs. Indexed).")
@@ -188,12 +188,10 @@ def build_docx():
     doc.add_heading("5. Academic Integrity & AI Use Declaration", level=1)
     p_ai = doc.add_paragraph()
     p_ai.paragraph_format.line_spacing = 1.15
-    p_ai.add_run("AI Tool Utilized: ").bold = True
-    p_ai.add_run("Antigravity AI Assistant (Google DeepMind Gemini 3.8 Flash).\n")
-    p_ai.add_run("Scope of Use: ").bold = True
-    p_ai.add_run("Assisted as an intelligent pair programmer to scaffold initial SQL DDL, synthesize high-volume mock datasets (50,000 rows), and structure matplotlib visualization scripts.\n")
-    p_ai.add_run("Student Verification & Ownership: ").bold = True
-    p_ai.add_run("All relational constraints, concurrency race conditions, query plans, and distributed consensus simulations were manually reviewed, executed, and validated by the student. The technical reflections and conclusions represent the student's authentic individual understanding.")
+    p_ai.add_run("AI tools used: ").bold = True
+    p_ai.add_run("Cursor, an AI coding assistant. It was used to review this portfolio, publish the GitHub repository, place the candidate name and student ID on the submission, and correct the benchmark figures so they match benchmark_results.json. AI assistance was also used while producing the practical work, including SQL scaffolding, synthetic datasets, and charts.\n")
+    p_ai.add_run("Student review: ").bold = True
+    p_ai.add_run("Olopha Oluwafeyikemi (301930634) is responsible for the submitted work. The schema constraints, concurrency tests, query plans, and this report were checked against the files in the repository before submission.")
 
     # Section 6: References
     doc.add_heading("6. Academic References", level=1)
@@ -386,7 +384,7 @@ def build_pdf():
     summary_data = [
         [Paragraph("Component", table_header), Paragraph("Marks", table_header), Paragraph("Technical Evidence", table_header), Paragraph("Key Metric / Result", table_header)],
         [Paragraph("<b>P1: Database Design</b>", table_cell), Paragraph("7", table_cell), Paragraph("8 tables in BCNF, constraints, seed dataset, high-res ERD", table_cell), Paragraph("Zero redundancy; eliminates all insertion/update/deletion anomalies", table_cell)],
-        [Paragraph("<b>P2: Query Optimisation</b>", table_cell), Paragraph("7", table_cell), Paragraph("50,000 txs benchmarked, composite/covering B-trees", table_cell), Paragraph("Up to <b>2,299x speedup</b>; table scans eliminated", table_cell)],
+        [Paragraph("<b>P2: Query Optimisation</b>", table_cell), Paragraph("7", table_cell), Paragraph("50,000 txs benchmarked, composite/covering B-trees", table_cell), Paragraph("Query 5: <b>314.06 ms to 0.33 ms (954x)</b>", table_cell)],
         [Paragraph("<b>P3: Transactions & Concurrency</b>", table_cell), Paragraph("7", table_cell), Paragraph("Multi-threaded tests, OCC version column, 2PL lock ordering", table_cell), Paragraph("Lost update double-spend prevented; deadlocks eliminated", table_cell)],
         [Paragraph("<b>P4: NoSQL & Advanced Models</b>", table_cell), Paragraph("7", table_cell), Paragraph("Document, Key-Value, Column-Family & Graph models", table_cell), Paragraph("TTL caching, circular fraud detection, schema evolution", table_cell)],
         [Paragraph("<b>P5: Distributed & Cloud</b>", table_cell), Paragraph("6", table_cell), Paragraph("Hash sharding, 2PC consensus, primary crash failover", table_cell), Paragraph("<b>RTO &lt; 3s, RPO = 0</b>; formal CAP/PACELC validation", table_cell)]
@@ -412,7 +410,7 @@ def build_pdf():
         story.append(Image(ERD_IMG, width=480, height=220))
         story.append(Paragraph("Figure 1: High-Resolution Entity-Relationship Diagram (ERD) for FinFlow Global Systems.", caption_style))
 
-    p2_text = """<b>Portfolio 2 (Query Processing & Indexing):</b> Populated 50,000 transactions and 66,000+ ledger entries. Evaluated window functions, CTE aggregations, and recursive queries. Strategic indexing reduced Query 5 (Recursive lineage) latency from <b>293.73 ms down to 0.13 ms (a 2,299x speedup)</b>, replacing sequential table scans with index seeks."""
+    p2_text = """<b>Portfolio 2 (Query Processing & Indexing):</b> Populated about 50,000 transactions and 66,000 ledger entries. Evaluated window functions, CTE aggregations, and a two-hop lineage query. A covering index reduced Query 5 from <b>314.06 ms to 0.33 ms (a 954x speedup)</b>. The AML query went from 3.76 ms to 5.00 ms, so indexing did not help every workload. These figures match benchmark_results.json."""
     story.append(Paragraph(p2_text, body_style))
 
     if os.path.exists(BENCH_IMG):
@@ -435,9 +433,8 @@ def build_pdf():
 
     # 5. Academic Integrity & AI Declaration
     story.append(Paragraph("5. Academic Integrity & AI Use Declaration", h1_style))
-    ai_text = """<b>AI Tool Utilized:</b> Antigravity AI Assistant (Google DeepMind Gemini 3.8 Flash).<br/>
-    <b>Scope of Use:</b> Assisted as an intelligent pair programmer to scaffold initial SQL DDL, synthesize high-volume mock datasets (50,000 rows), and structure matplotlib visualization scripts.<br/>
-    <b>Student Verification & Ownership:</b> All relational constraints, concurrency race conditions, query plans, and distributed consensus simulations were manually reviewed, executed, and validated by the student. The technical reflections and conclusions represent the student's authentic individual understanding."""
+    ai_text = """<b>AI tools used:</b> Cursor, an AI coding assistant. It was used to review this portfolio, publish the GitHub repository, place the candidate name and student ID on the submission, and correct the benchmark figures so they match benchmark_results.json. AI assistance was also used while producing the practical work, including SQL scaffolding, synthetic datasets, and charts.<br/>
+    <b>Student review:</b> Olopha Oluwafeyikemi (301930634) is responsible for the submitted work. The schema constraints, concurrency tests, query plans, and this report were checked against the files in the repository before submission."""
     story.append(Paragraph(ai_text, body_style))
 
     # 6. References

@@ -99,7 +99,7 @@ advanced-database-portfolio/
 | Component | Marks | Key Practical Evidence | Highlighted Metric / Result |
 | :--- | :---: | :--- | :--- |
 | **Portfolio 1: Database Design** | 7 | 8 normalized tables in BCNF, constraints, seed dataset, high-res ERD graphic | Zero redundancy; eliminates insertion, update & deletion anomalies |
-| **Portfolio 2: Query Optimisation** | 7 | 50,000 transactions, 65,000+ ledger entries benchmarked across 5 queries | **Up to 1,000x query speedup**; table scans eliminated via covering B-trees |
+| **Portfolio 2: Query Optimisation** | 7 | 50,000 transactions, 65,000+ ledger entries benchmarked across 5 queries | **Query 5: 314.06 ms to 0.33 ms (954×)**; the AML query did not get faster |
 | **Portfolio 3: Transactions & Concurrency** | 7 | Multi-threaded race condition tests, OCC version validation, deadlock ordering | **Lost update double-spend prevented**; strict balance invariants preserved |
 | **Portfolio 4: NoSQL & Advanced Models** | 7 | Document, Key-Value, Column-Family, and Graph models with empirical queries | Sub-millisecond idempotency lookup; circular fraud ring detection; schema-free event telemetry |
 | **Portfolio 5: Distributed & Cloud** | 6 | Horizontal sharding by customer hash, 2PC consensus, replica failover simulation | **RTO < 3.0 seconds, RPO = 0**; formal CAP (CP) & PACELC (PC/EC) validation |
@@ -128,15 +128,10 @@ python run_all_experiments.py
 ### 5.1 Technical Reflection
 Developing this practical portfolio underscored the reality that no single database engine or paradigm is universally optimal. In designing FinFlow:
 1. **The Primacy of Mathematical Invariants:** The double-entry general ledger demands strict relational normalization (3NF/BCNF) and serializable transactions. Using NoSQL for financial balance bookkeeping would invite race conditions and double-spending under high concurrency.
-2. **The Power and Limits of Indexing:** While targeted B-tree indexes produced up to 1,000x speedups on selective queries, low-cardinality filters demonstrated the "selectivity tipping point", where index seeks cost more than sequential page scans.
+2. **The Power and Limits of Indexing:** The two-hop lineage query fell from 314.06 ms to 0.33 ms after a covering index. The less selective AML query got slightly slower, which is the selectivity limit of indexing.
 3. **Polyglot Persistence as the Industry Standard:** Combining an RDBMS for ACID ledgers, a Document Store for heterogeneous device telemetry, and an In-Memory Key-Value store for idempotency tokens represents the true state-of-the-art in scalable fintech engineering.
 4. **Distributed Trade-Offs:** The CAP and PACELC theorems are not abstract theories but daily engineering trade-offs. For core ledgers, FinFlow correctly trades regional availability during partitions to guarantee absolute financial consistency.
 
 ### 5.2 Academic Integrity & AI Use Declaration
-* **AI Tools Utilized:** Antigravity AI Assistant (Google DeepMind Gemini 3.8 Flash).
-* **Specific Role of AI:** Used as an intelligent pair programmer and technical sounding board to brainstorm architectural scenarios, generate high-volume synthetic mock datasets, scaffold initial SQL schemas, and format publication-style matplotlib visualization scripts.
-* **Student Review, Correction & Verification:**
-  - All SQL DDL scripts were manually reviewed for relational constraint validity (`ON DELETE RESTRICT`, `CHECK` bounds).
-  - The multi-threaded concurrency scripts were executed, debugged, and validated to ensure live thread contention reproduces authentic race conditions and deadlock exceptions.
-  - Benchmark query plans (`EXPLAIN QUERY PLAN`) were verified against SQLite query planner internals to confirm index scans versus table scans.
-  - All documentation, reflections, and analyses were rigorously scrutinized for technical accuracy and adherence to MIVA Open University academic standards.
+* **AI tools used:** Cursor, an AI coding assistant. It was used to review this portfolio, publish the GitHub repository, place the candidate name and student ID on the submission, and correct the benchmark figures so they match `benchmark_results.json`. AI assistance was also used while producing the practical work, including SQL scaffolding, synthetic datasets, and charts.
+* **Student review:** Olopha Oluwafeyikemi (301930634) is responsible for the submitted work. The schema constraints, concurrency tests, query plans, and the written report were checked against the files in the repository before submission.
