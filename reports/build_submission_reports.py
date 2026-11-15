@@ -69,7 +69,7 @@ def build_docx():
         ("Candidate Name / Student ID:", "Postgraduate Research Candidate (MIT Programme)"),
         ("Course & Academic Session:", "MIT 8103 Advanced Database Systems (2026/2027 Session)"),
         ("Selected Case Study:", "FinFlow Global Payment Systems (Cross-Border Digital Banking)"),
-        ("GitHub Repository Link:", "https://github.com/miva-pg-student/advanced-database-portfolio")
+        ("GitHub Repository Link:", "https://github.com/Pheyi07/advanced-database-portfolio")
     ]
     for idx, (label, val) in enumerate(meta_data):
         row = table_meta.rows[idx]
@@ -359,7 +359,7 @@ def build_pdf():
         [Paragraph("<b>Candidate Name / ID:</b>", table_cell), Paragraph("Postgraduate Research Candidate (MIT Programme)", table_cell)],
         [Paragraph("<b>Course & Session:</b>", table_cell), Paragraph("MIT 8103 Advanced Database Systems (2026/2027 Session)", table_cell)],
         [Paragraph("<b>Selected Case Study:</b>", table_cell), Paragraph("FinFlow Global Payment Systems (Cross-Border Digital Banking)", table_cell)],
-        [Paragraph("<b>GitHub Repository:</b>", table_cell), Paragraph("<u>https://github.com/miva-pg-student/advanced-database-portfolio</u>", table_cell)]
+        [Paragraph("<b>GitHub Repository:</b>", table_cell), Paragraph("<u>https://github.com/Pheyi07/advanced-database-portfolio</u>", table_cell)]
     ]
     t_meta = Table(meta_data, colWidths=[150, 354])
     t_meta.setStyle(TableStyle([

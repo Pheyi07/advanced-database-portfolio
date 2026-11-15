@@ -114,7 +114,7 @@ To execute all tests, benchmarks, simulations, and diagram generators in a singl
 
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone https://github.com/Pheyi07/advanced-database-portfolio.git
 cd advanced-database-portfolio
 
 # Run the master automated execution runner

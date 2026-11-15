@@ -9,7 +9,7 @@
 * **Assessment Weight:** 40 Marks
 * **Selected Case Study:** FinFlow Global Payment Systems (Cross-Border Digital Banking)
 * **Submission Platform:** MIVA LMS + GitHub Repository
-* **GitHub Repository Link:** `https://github.com/miva-pg-student/advanced-database-portfolio` *(Private / Assessor Access Enabled)*
+* **GitHub Repository Link:** `https://github.com/Pheyi07/advanced-database-portfolio` *(Private / Assessor Access Enabled)*
 
 ---
 
